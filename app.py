@@ -12,10 +12,16 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 def other_command(iter_obj, query):
     query_items = query.split('|')
     result = iter(map(lambda v: v.strip(), iter_obj))
+    # print(query_items)
     for item in query_items:
         cmd_value = item.split(':')
         command = cmd_value[0]
-        value = cmd_value[1]
+
+        if cmd_value[0] == 'unique':
+            value = cmd_value[0]
+        else:
+            value = cmd_value[1]
+
         result = build_query(result, command, value)
     return result
 
@@ -41,18 +47,19 @@ def build_query(file_data, cmd, value):
 @app.route("/perform_query", methods=["POST", "GET"])
 def perform_query():
 
-    query = request.args.get("query")
+
     try:
+        query = request.args.get("query")
         cmd1 = request.args.get("cmd1")
         cmd2 = request.args.get("cmd2")
         value1 = request.args.get("value1")
         value2 = request.args.get("value2")
         file_name = request.args.get("file_name")
-
     except KeyError:
         raise BadRequest(description=f"111not found key")
+
     file_path = os.path.join(DATA_DIR, file_name)
-    print(111)
+
     if not os.path.exists(file_path):
         return BadRequest(description=f"222{file_name} was not found")
 
